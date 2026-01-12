@@ -1,0 +1,30 @@
+{
+  "name": "todobackend",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "homepage": "https://github.com/aniket-bhagwat123/todoBackend#readme",
+  "bugs": {
+    "url": "https://github.com/aniket-bhagwat123/todoBackend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aniket-bhagwat123/todoBackend.git"
+  },
+  "license": "ISC",
+  "author": "aniket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
