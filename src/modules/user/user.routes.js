@@ -7,6 +7,6 @@ router.get('/', getUserList);
 router.post('/signup', registerUser);
 router.get('/get-user/:id', fetchUserById);
 router.patch('/update-user', updateUserInfo);
-router.post('/delete-user/:id', softDeleteUser);
+router.delete('/delete-user/:id', softDeleteUser);
 
 export default router;
