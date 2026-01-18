@@ -29,7 +29,17 @@ export const getAllSprings = async (req, res) => {
 
 // SERVICE TO CREATE A NEW SPRING
 export const createSpring = async (springData) => {
-    const newSpring = new Spring(springData);
-    await newSpring.save();
+    const { spring_name } = springData;
+
+    if (!spring_name) {
+        throw new Error("Spring name is required");
+    }
+
+    const checkExisting = await Spring.findOne({ spring_name: springData.spring_name, isDeleted: false });
+    if (checkExisting) {
+        throw new Error("Spring with this name already exists");
+    }
+    
+    const newSpring = await Spring.create(springData);
     return newSpring;
 }
