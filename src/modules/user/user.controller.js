@@ -1,4 +1,4 @@
-import { createUser, getUserById, getUsers, updateUser, softDelete } from "./user.service.js";
+import { getUserById, getUsers, updateUser, softDelete } from "./user.service.js";
 
 // GET USER LIST WITH FILTERING AND PAGINATION
 export const getUserList = async (req, res) => {
@@ -34,21 +34,6 @@ export const getUserList = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message || "Failed to fetch users" });
-  }
-};
-
-// REGISTER NEW USER
-export const registerUser = async (req, res) => {
-  try {
-    const user = await createUser(req.body);
-
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      data: user,
-    });
-  } catch (error) {
-    res.status(400).json({ error: error.message || "Failed to register user" });
   }
 };
 

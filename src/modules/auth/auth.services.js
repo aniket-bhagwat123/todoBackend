@@ -1,7 +1,8 @@
 import User from "../user/user.model.js";
 import bcrypt from "bcryptjs";
-import Jwt from "jsonwebtoken";
+import { generateJwtToken } from "../../utils/generateJwtToken.js";
 
+// LOGIN AUTHENTICATION
 export const LoginAuth = async (email, password) => {
   const user = await User.findOne({ email, isDeleted: { $ne: true } });
   if (!user) {
@@ -12,11 +13,32 @@ export const LoginAuth = async (email, password) => {
     throw new Error("Password is incorrect");
   }
 
-  const accessToken = Jwt.sign(
-    { userId: user._id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '1h' }
-  );
+  const accessToken = generateJwtToken({ userId: user._id, email: user.email });
 
   return { user, accessToken};
 };
+
+// CREATE NEW USER
+export const createUser = async (userData) => {
+  const { email, password, name } = userData;
+  
+  if (!email || !password || !name) {
+    throw new Error("Name, email, and password are required");
+  };
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new Error("Email already in use");
+  };
+
+  const SALT = 10;
+  const hashedPassword = await bcrypt.hash(password, SALT);
+
+  const user = await User.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
+
+  return user;
+}

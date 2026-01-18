@@ -1,10 +1,9 @@
 import User from "./user.model.js";
-import bcrypt from "bcryptjs";
 
 // GET ALL USERS WITH FILTERING AND PAGINATION
 export const getUsers = async (req, res) => {
   try {
-    const { email, name, page, limit } = req.query || {};
+    const { email, name, page, limit, isActive } = req.query || {};
     const filter = {
       isDeleted: { $ne: true },
     };
@@ -12,6 +11,10 @@ export const getUsers = async (req, res) => {
     if (email) {
       filter.email = email;
     };
+
+    if (isActive !== undefined) {
+      filter.isActive = isActive === 'true';
+    }
 
     if (name) {
       filter.name = { $regex: name, $options: "i" }; // Case-insensitive search
@@ -33,41 +36,16 @@ export const getUsers = async (req, res) => {
   } 
 };
 
-// CREATE NEW USER
-export const createUser = async (userData) => {
-  const { email, password, name } = userData;
-  
-  if (!email || !password || !name) {
-    throw new Error("Name, email, and password are required");
-  };
-
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new Error("Email already in use");
-  };
-
-  const SALT = 10;
-  const hashedPassword = await bcrypt.hash(password, SALT);
-
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-  });
-
-  return user;
-}
-
 // UPDATE USER INFO
 export const updateUser = async (data_) => {
-  const { email, name, password, user_id } = data_;
+  const { email, name, password, user_id, isActive } = data_;
 
   if(!user_id) {
     throw new Error("User ID is required for update");
   }
 
-  if (!email && !name && !password) {
-    throw new Error("At least one field (name, email, or password) must be provided for update");
+  if (!email && !name && !password && isActive === undefined) {
+    throw new Error("At least one field (name, email, password, or isActive) must be provided for update");
   }
 
   const existingUser = await getUserById(user_id);
@@ -75,9 +53,16 @@ export const updateUser = async (data_) => {
     throw new Error("User not found");
   }
 
+  const userUpdateData = {};
+
+  if (name !== undefined) userUpdateData.name = name;
+  if (email !== undefined) userUpdateData.email = email;
+  if (password !== undefined) userUpdateData.password = password;
+  if (isActive !== undefined) userUpdateData.isActive = isActive;
+
   const updatedUser = await User.findByIdAndUpdate(
     user_id,
-    { name, email, password },
+    userUpdateData,
     { new: true }
   );
 
