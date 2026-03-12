@@ -1,6 +1,7 @@
 import User from "../user/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateJwtToken } from "../../utils/generateJwtToken.js";
+import { validateRequiredFields } from "../../utils/validateRequiredFields.js";
 
 // LOGIN AUTHENTICATION
 export const LoginAuth = async (email, password) => {
@@ -22,9 +23,7 @@ export const LoginAuth = async (email, password) => {
 export const createUser = async (userData) => {
   const { email, password, name } = userData;
   
-  if (!email || !password || !name) {
-    throw new Error("Name, email, and password are required");
-  };
+  validateRequiredFields(userData, ['email', 'password', 'name']);
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
