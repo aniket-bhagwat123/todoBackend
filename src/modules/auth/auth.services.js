@@ -2,6 +2,7 @@ import User from "../user/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateJwtToken } from "../../utils/generateJwtToken.js";
 import { validateRequiredFields } from "../../utils/validateRequiredFields.js";
+import { getImageDetailsById } from "../uploads/uploadService.js";
 
 // LOGIN AUTHENTICATION
 export const LoginAuth = async (email, password) => {
@@ -21,9 +22,14 @@ export const LoginAuth = async (email, password) => {
 
 // CREATE NEW USER
 export const createUser = async (userData) => {
-  const { email, password, name } = userData;
+  const { email, password, name, avatar_id } = userData;
   
   validateRequiredFields(userData, ['email', 'password', 'name']);
+
+  let avatar = null;
+  if (avatar_id) {
+    avatar = await getImageDetailsById(avatar_id);
+  };
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -37,6 +43,7 @@ export const createUser = async (userData) => {
     name,
     email,
     password: hashedPassword,
+    avatar_url: avatar ? avatar.url : null,
   });
 
   return user;

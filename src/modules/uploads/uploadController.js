@@ -1,4 +1,19 @@
-import { uploadToS3, getImageDetailsById } from './uploadService.js';
+import { getAllFilesService, uploadToS3, getImageDetailsById } from './uploadService.js';
+
+// Get all files
+export const getAllFiles = async (req, res) => {
+  try {
+    const allFiles = await getAllFilesService(req.params); 
+
+    res.status(200).json({
+      success: true,
+      message: 'Files retrieved successfully',
+      data: allFiles,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 // Upload single file
 export const uploadSingle = async (req, res) => {

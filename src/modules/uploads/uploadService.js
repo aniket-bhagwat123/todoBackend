@@ -3,6 +3,28 @@ import { s3 } from "../../../config/s3Config.js";
 import path from "path";
 import files from "./files.model.js";
 
+export const getAllFilesService = async (request) => {
+  const { page, limit, search } = request || {};
+  let filter = {};
+  
+  if (search) {
+      filter.$or = [
+          { originalName: { $regex: search, $options: 'i' } },
+      ];
+  }
+
+  if(page && limit) {
+      const pageNumber = parseInt(page, 10) || 1;
+      const limitNumber = parseInt(limit, 10) || 10;
+      const skip = (pageNumber - 1) * limitNumber;
+      const files = await files.find(filter).skip(skip).limit(limitNumber);
+      return files;
+  }
+
+  const allFiles = await files.find(filter);
+  return allFiles;
+}
+
 export const uploadToS3 = async (file) => {
   const fileName = file.originalname;
   const ext = path.extname(file.originalname);
@@ -30,6 +52,9 @@ export const uploadToS3 = async (file) => {
 };
 
 export const getImageDetailsById = async (id) => {
+  if (!id) {
+    throw new Error("Image ID is required");
+  };
   const image = await files.findById(id);
   return image;
-}
+};

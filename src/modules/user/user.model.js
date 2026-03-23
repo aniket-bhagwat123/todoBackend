@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    avatar: {
+    avatar_url: {
       type: String,
       default: null,
     },
