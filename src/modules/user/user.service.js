@@ -1,4 +1,5 @@
 import User from "./user.model.js";
+import { getImageDetailsById } from "../uploads/uploadService.js";
 
 // GET ALL USERS WITH FILTERING AND PAGINATION
 export const getUsers = async (req, res) => {
@@ -38,14 +39,14 @@ export const getUsers = async (req, res) => {
 
 // UPDATE USER INFO
 export const updateUser = async (data_) => {
-  const { email, name, password, user_id, isActive } = data_;
+  const { email, name, password, user_id, avatar_id, isActive } = data_;
 
   if(!user_id) {
     throw new Error("User ID is required for update");
   }
 
-  if (!email && !name && !password && isActive === undefined) {
-    throw new Error("At least one field (name, email, password, or isActive) must be provided for update");
+  if (!email && !name && !password && !avatar_id && isActive === undefined) {
+    throw new Error("At least one field (name, email, password, avatar_id, or isActive) must be provided for update");
   }
 
   const existingUser = await getUserById(user_id);
@@ -59,6 +60,11 @@ export const updateUser = async (data_) => {
   if (email !== undefined) userUpdateData.email = email;
   if (password !== undefined) userUpdateData.password = password;
   if (isActive !== undefined) userUpdateData.isActive = isActive;
+
+  if(avatar_id !== undefined) {
+    const avatar = await getImageDetailsById(avatar_id);
+    userUpdateData.avatar_url = avatar ? avatar.url : null;
+  }
 
   const updatedUser = await User.findByIdAndUpdate(
     user_id,
